@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#a9a9a9</color>
+    <color name="active">#dab453</color>
+
+        <!-- Base colors -->
+        <color name="primary_color">#2196F3</color>
+        <color name="primary_variant_color">#1976D2</color>
+        <color name="secondary_color">#FF4081</color>
+
+        <!-- Background colors -->
+        <color name="background_light">#F5F5F5</color>
+        <color name="surface_light">#FFFFFF</color>
+
+        <!-- Text colors -->
+        <color name="text_primary">#212121</color>
+        <color name="text_secondary">#757575</color>
+
+        <!-- Error and state colors -->
+        <color name="error_color">#FF5722</color>
+        <color name="success_color">#4CAF50</color>
+
+
+    <!-- Status Colors -->
+    <color name="status_red">#FF5252</color>
+    <color name="status_yellow">#FFC107</color>
+    <color name="status_green">#4CAF50</color>
+    <color name="status_blue">#2196F3</color>
+
+    <!-- Text Colors -->
+    <color name="primary_text">#DE000000</color>
+    <color name="secondary_text">#8A000000</color>
+
+    <color name="primary_gold">#DAB453</color>
+    <color name="primary">#dab453</color>
+    <color name="primary_dark">#c0993d</color>
+    <color name="accent">#FF9800</color>
+
+</resources>

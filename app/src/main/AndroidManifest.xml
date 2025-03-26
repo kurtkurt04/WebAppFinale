@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CelestialJewel"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".activities.OTP"
+            android:exported="true" />
+        <activity
+            android:name=".activities.activity_toclaim"
+            android:exported="true" />
+        <activity
+            android:name=".activities.OrderSuccess"
+            android:exported="false" />
+        <activity
+            android:name=".activities.Checkout"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ShopLocation"
+            android:exported="true" />
+        <activity
+            android:name=".activities.ChangePass"
+            android:exported="true" />
+        <activity
+            android:name=".activities.Registration"
+            android:exported="true" />
+        <activity
+            android:name=".activities.Profile"
+            android:exported="true" />
+        <activity
+            android:name=".activities.Cart"
+            android:exported="true" />
+        <activity
+            android:name=".activities.Shop"
+            android:exported="true" />
+        <activity
+            android:name=".activities.HomePage"
+            android:exported="true" />
+        <activity
+            android:name=".activities.LoginPage"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+    </application>
+
+</manifest>
