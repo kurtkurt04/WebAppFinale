@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.json)
     implementation(libs.circleimageview)
     implementation (libs.logging.interceptor)
     implementation(libs.glide)

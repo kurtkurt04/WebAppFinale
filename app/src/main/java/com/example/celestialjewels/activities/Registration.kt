@@ -30,7 +30,7 @@ class Registration : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_registration)
 
-        val RegisterBttn = findViewById<Button>(R.id.Registration)
+        val RegisterBttn = findViewById<Button>(R.id.Registration33)
         etusername = findViewById(R.id.Etusername)
         etpassword = findViewById(R.id.Etpass)
         etphoneNum = findViewById(R.id.EtPhoneNum)
