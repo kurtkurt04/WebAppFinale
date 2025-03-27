@@ -13,7 +13,7 @@ data class Customers(
     val password: String,
 
     @SerializedName("phone_number")
-    val phoneNum: Int,
+    val phoneNum: String,
 
     @SerializedName("email")
     val email: String

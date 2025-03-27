@@ -121,15 +121,29 @@
         android:drawablePadding="15dp"
         android:ems="10"
         android:hint="Enter Password"
-        android:inputType="text|textPassword"
+        android:inputType="textPassword"
         android:paddingStart="12dp"
-        android:paddingEnd="12dp"
+        android:paddingEnd="50dp"
         android:textColor="#000000"
         android:textColorHint="#0D0D0D"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Etusername" />
+
+    <ImageView
+        android:id="@+id/eyeToggle"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="12dp"
+        android:contentDescription="Toggle Password Visibility"
+        android:src="@drawable/eye"
+        app:layout_constraintBottom_toBottomOf="@+id/Etpass"
+        app:layout_constraintEnd_toEndOf="@+id/Etpass"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/Etpass"
+        app:layout_constraintTop_toTopOf="@+id/Etpass"
+        app:layout_constraintVertical_bias="0.454" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

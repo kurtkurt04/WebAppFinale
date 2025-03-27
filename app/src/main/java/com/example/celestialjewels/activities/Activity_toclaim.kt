@@ -1,5 +1,6 @@
 package com.example.celestialjewels.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,10 +16,8 @@ import com.example.celestialjewels.adapters.OrderAdapter
 import com.example.celestialjewels.connection.ApiService
 import com.example.celestialjewels.connection.RetrofitClient
 import com.example.celestialjewels.managers.SessionManager
-import com.example.celestialjewels.models.CompleteOrder
-import com.example.celestialjewels.models.OrderStatus
-import com.example.celestialjewels.models.Orders
-import com.example.celestialjewels.models.OrderItems
+import com.example.celestialjewels.models.*
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,6 +47,8 @@ class activity_toclaim : AppCompatActivity() {
         customerId?.let {
             fetchOrders(it)
         }
+
+        setupBottomNavigation()
     }
 
     private fun fetchOrders(customerId: Int) {
@@ -75,22 +76,52 @@ class activity_toclaim : AppCompatActivity() {
                     }
                 } else {
                     Log.e("FetchOrders", "Error: ${response.code()} - ${response.message()}")
-                    // Handle error - maybe show a toast or error view
                 }
             }
 
             override fun onFailure(call: Call<List<Map<String, Any>>>, t: Throwable) {
                 Log.e("FetchOrders", "Network error: ${t.message}")
-                // Handle network error - maybe show a toast or error view
             }
         })
     }
 
+    private fun setupBottomNavigation() {
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+
+        bottomNavigationView.selectedItemId = R.id.action_profile
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.action_home -> {
+                    startActivity(Intent(this, HomePage::class.java))
+                    finish()
+                    true
+                }
+
+                R.id.action_notification -> {
+                    startActivity(Intent(this, Shop::class.java))
+                    finish()
+                    true
+                }
+
+                R.id.action_profile -> {
+                    startActivity(Intent(this, Profile::class.java))
+                    finish()
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
+
+    // **Moved processOrdersData outside setupBottomNavigation()**
     private fun processOrdersData(ordersData: List<Map<String, Any>>): List<CompleteOrder> {
         return ordersData.map { orderMap ->
             val orderId = (orderMap["order_id"] as? Number)?.toInt() ?: 0
             val orderDate = orderMap["order_date"] as? String ?: ""
-            val apiTotalAmount = (orderMap["total_amount"] as? Number)?.toDouble() ?: 0.0  // From API
+            val apiTotalAmount = (orderMap["total_amount"] as? Number)?.toDouble() ?: 0.0
+
             val status = when (orderMap["status"] as? String) {
                 "Pending" -> OrderStatus.PENDING
                 "Processing" -> OrderStatus.PROCESSING
@@ -104,11 +135,15 @@ class activity_toclaim : AppCompatActivity() {
             val items = (orderMap["items"] as? List<Map<String, Any>>)?.map { itemMap ->
                 val productId = (itemMap["product_id"] as? Number)?.toInt() ?: 0
                 val productName = itemMap["product_name"] as? String ?: "Unknown Product"
-                val quantity = (itemMap["quantity"] as? Number)?.toInt() ?: 1  // Default to 1 if missing
+                val quantity = (itemMap["quantity"] as? Number)?.toInt() ?: 1
                 val unitPrice = itemMap["unit_price"].toString().toDoubleOrNull() ?: 0.0
-                val totalAmount = (itemMap["total_amount"] as? Number)?.toDouble() ?: (quantity * unitPrice)  // Use API total if available
+                val totalAmount = (itemMap["total_amount"] as? Number)?.toDouble()
+                    ?: (quantity * unitPrice)
 
-                Log.d("FetchOrders", "Item: $productName, QTY: $quantity, Unit: $unitPrice, Total: $totalAmount")
+                Log.d(
+                    "FetchOrders",
+                    "Item: $productName, QTY: $quantity, Unit: $unitPrice, Total: $totalAmount"
+                )
 
                 OrderItems(
                     orderItemId = null,
@@ -121,8 +156,8 @@ class activity_toclaim : AppCompatActivity() {
                 )
             } ?: emptyList()
 
-            // Compute total amount for the order (sum of all item totals)
-            val calculatedTotal = items.sumOf { it.totalAmount }.takeIf { it > 0.0 } ?: apiTotalAmount  // Fallback to API total if needed
+            val calculatedTotal = items.sumOf { it.totalAmount }.takeIf { it > 0.0 }
+                ?: apiTotalAmount
 
             Log.d("FetchOrders", "Final Calculated Total: $calculatedTotal")
 
@@ -131,12 +166,11 @@ class activity_toclaim : AppCompatActivity() {
                     orderId = orderId,
                     customerId = SessionManager.getCustomerId(this) ?: 0,
                     orderDate = orderDate,
-                    totalAmount = calculatedTotal,  // Corrected total calculation
+                    totalAmount = calculatedTotal,
                     status = status
                 ),
                 items = items
             )
         }
     }
-
 }

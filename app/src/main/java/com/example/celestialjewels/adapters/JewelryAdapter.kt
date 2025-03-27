@@ -1,6 +1,7 @@
 package com.example.celestialjewels.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,13 +35,14 @@ class JewelryAdapter(
     override fun onBindViewHolder(holder: JewelryViewHolder, position: Int) {
         val currentItem = jewelryList[position]
 
-        // Set image from Base64
+        // Prioritize Base64 image, fallback to local resource
         val bitmap = currentItem.getImageBitmap()
         if (bitmap != null) {
             holder.imageView.setImageBitmap(bitmap)
         } else {
             // Set the local image resource as a fallback
             holder.imageView.setImageResource(currentItem.localImageResource)
+            Log.w("JewelryAdapter", "No image found for ${currentItem.name}")
         }
 
         holder.nameText.text = currentItem.name

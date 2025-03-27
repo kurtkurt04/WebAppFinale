@@ -68,7 +68,7 @@ class ChangePass : AppCompatActivity() {
                 etEmail.error = "Invalid email address"
                 return
             }
-            phoneNum.isEmpty() || phoneNum.length < 10 -> {
+            phoneNum.isEmpty() || phoneNum.length <11 -> {
                 etPhoneNum.error = "Invalid phone number"
                 return
             }
@@ -90,7 +90,7 @@ class ChangePass : AppCompatActivity() {
             customerId = customerId,
             username = username,
             email = email,
-            phoneNum = phoneNum.toInt(),
+            phoneNum = phoneNum,
             password = "" // Not updating password here
         )
 

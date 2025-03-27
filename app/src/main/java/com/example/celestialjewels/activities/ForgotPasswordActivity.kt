@@ -1,9 +1,12 @@
 package com.example.celestialjewels.activities
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -46,9 +49,13 @@ class ForgotPasswordActivity : AppCompatActivity() {
         // Set up Click Listeners
         setupClickListeners()
 
+        // Set up Password Visibility Toggle
+        setupPasswordToggle() // 🔹 CALL THIS FUNCTION
+
         // Initial UI State
         updateUIState(State.EMAIL_INPUT)
     }
+
 
     private fun initializeViews() {
         emailEditText = findViewById(R.id.editTextEmail)
@@ -68,6 +75,11 @@ class ForgotPasswordActivity : AppCompatActivity() {
             if (validateEmail(email)) {
                 sendOTP(email)
             }
+        }
+        findViewById<Button>(R.id.backbutton).setOnClickListener {
+            val intent = Intent(this, LoginPage::class.java)
+            startActivity(intent)
+            finish() // Ensures the current activity is closed
         }
 
         verifyOtpButton.setOnClickListener {
@@ -273,4 +285,34 @@ class ForgotPasswordActivity : AppCompatActivity() {
             else -> true
         }
     }
+    private fun setupPasswordToggle() {
+        val eyeIconNewPassword = findViewById<ImageView>(R.id.imageView5)
+        val eyeIconConfirmPassword = findViewById<ImageView>(R.id.imageView6)
+
+        var isPasswordVisible = false
+        var isConfirmPasswordVisible = false
+
+        eyeIconNewPassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            togglePasswordVisibility(newPasswordEditText, isPasswordVisible, eyeIconNewPassword)
+        }
+
+        eyeIconConfirmPassword.setOnClickListener {
+            isConfirmPasswordVisible = !isConfirmPasswordVisible
+            togglePasswordVisibility(confirmPasswordEditText, isConfirmPasswordVisible, eyeIconConfirmPassword)
+        }
+    }
+
+    private fun togglePasswordVisibility(editText: EditText, isVisible: Boolean, eyeIcon: ImageView) {
+        if (isVisible) {
+            editText.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            eyeIcon.setImageResource(R.drawable.eye) // Change to open eye icon
+        } else {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            eyeIcon.setImageResource(R.drawable.hidden) // Change to closed eye icon
+        }
+        editText.setSelection(editText.text.length) // Maintain cursor position
+    }
+
+
 }
