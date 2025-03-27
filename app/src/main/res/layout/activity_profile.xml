@@ -17,6 +17,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
             android:orientation="vertical"
             android:padding="16dp">
 
@@ -25,30 +26,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#2C2C2C"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="#2C2C2C">
+                app:cardElevation="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
+                    android:padding="16dp">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/profileImage"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:src="@drawable/ic_person"
-                        app:civ_border_width="3dp"
-                        app:civ_border_color="#FBFBFB"/>
+                        app:civ_border_color="#FBFBFB"
+                        app:civ_border_width="3dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginStart="16dp">
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/userName"
@@ -57,25 +58,25 @@
                             android:text="Marc Edison"
                             android:textColor="#FBFBFB"
                             android:textSize="20sp"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/userEmail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:text="Es Co SI Yow"
                             android:textColor="#B0B0B0"
-                            android:layout_marginTop="4dp"
-                            android:textSize="14sp"/>
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/userPhone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
                             android:text="992222333444"
                             android:textColor="#B0B0B0"
-                            android:layout_marginTop="4dp"
-                            android:textSize="14sp"/>
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -86,12 +87,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginVertical="12dp"
                 android:text="Order History"
                 android:textAlignment="center"
                 android:textColor="#FBFBFBFF"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginVertical="12dp"/>
+                android:textStyle="bold" />
 
 
             <!-- Account Settings Section -->
@@ -127,9 +128,9 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:cardBackgroundColor="#2C2C2C"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="#2C2C2C">
+                app:cardElevation="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -146,7 +147,7 @@
                         android:paddingHorizontal="16dp"
                         android:text="Change Details"
                         android:textColor="#FBFBFB"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -163,7 +164,7 @@
                         android:paddingHorizontal="16dp"
                         android:text="Shop Details and Location"
                         android:textColor="#FBFBFB"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -180,7 +181,7 @@
                         android:paddingHorizontal="16dp"
                         android:text="Logout"
                         android:textColor="#FF5555"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>

@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Base64
+import android.util.Log
 import com.example.celestialjewels.R
 import com.google.gson.annotations.SerializedName
 
@@ -18,12 +19,18 @@ data class Jewelry(
     var quantity: Int = 1,
     var localImageResource: Int = R.drawable.one
 ) : Parcelable {
-    // Convert Base64 to Bitmap
     fun getImageBitmap(): Bitmap? {
         return try {
-            val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+            // Check if base64Image is not empty
+            if (base64Image.isNotEmpty()) {
+                // Directly decode the Base64 string
+                val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+            } else {
+                null
+            }
         } catch (e: Exception) {
+            Log.e("Jewelry", "Error decoding image: ${e.message}", e)
             null
         }
     }

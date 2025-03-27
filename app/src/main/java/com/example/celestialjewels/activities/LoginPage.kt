@@ -2,8 +2,10 @@ package com.example.celestialjewels.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +19,7 @@ import retrofit2.Response
 
 class LoginPage : AppCompatActivity() {
     private val apiService = RetrofitClient.apiService
+    private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,9 +27,23 @@ class LoginPage : AppCompatActivity() {
 
         val usernameField = findViewById<EditText>(R.id.Etusername)
         val passwordField = findViewById<EditText>(R.id.Etpass)
+        val eyeToggle = findViewById<ImageView>(R.id.eyeToggle)
         val loginBttn = findViewById<Button>(R.id.Login)
         val forgotPasswordBttn = findViewById<TextView>(R.id.fgtpass)
         val registerBttn = findViewById<TextView>(R.id.Register)
+
+        // Toggle password visibility
+        eyeToggle.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                passwordField.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                eyeToggle.setImageResource(R.drawable.eye) // Change to open eye icon
+            } else {
+                passwordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                eyeToggle.setImageResource(R.drawable.hidden) // Change to closed eye icon
+            }
+            passwordField.setSelection(passwordField.text.length) // Keep cursor at the end
+        }
 
         // Handle login button click
         loginBttn.setOnClickListener {
@@ -38,33 +55,26 @@ class LoginPage : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Create a Customers object to send to the PHP script
             val loginData = Customers(
                 username = username,
                 password = password,
-                phoneNum = 0,  // Placeholder value
+                phoneNum = " ",  // Placeholder value
                 email = ""     // Placeholder value
             )
 
-            // Make the login request using Retrofit
             apiService.login(loginData).enqueue(object : Callback<Customers> {
                 override fun onResponse(call: Call<Customers>, response: Response<Customers>) {
                     if (response.isSuccessful) {
                         val customer = response.body()
                         if (customer?.customerId != null) {
-                            // Save customer ID to SessionManager
                             SessionManager.saveCustomerId(this@LoginPage, customer.customerId)
-
-                            // Login success, navigate to HomePage
                             val intent = Intent(this@LoginPage, HomePage::class.java)
                             startActivity(intent)
-                            finish() // Close login activity
+                            finish()
                         } else {
-                            // Login failed, show error message
                             Toast.makeText(this@LoginPage, "Invalid username or password", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        // Server error
                         Toast.makeText(this@LoginPage, "Server error. Please try again later.", Toast.LENGTH_SHORT).show()
                     }
                 }
