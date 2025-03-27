@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val BASE_URL = "http://192.168.100.144/CelestialMobile/"
+    private const val BASE_URL = "http://192.168.100.121/CelestialMobile/"
 
     // Create an interceptor for logging network requests and responses
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

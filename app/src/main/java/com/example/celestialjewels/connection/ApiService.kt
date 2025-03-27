@@ -7,6 +7,8 @@ import com.example.celestialjewels.models.ProductResponse
 import retrofit2.Call
 import okhttp3.ResponseBody
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -36,5 +38,40 @@ interface ApiService {
         @Query("customer_id") customerId: Int
     ): Call<List<Map<String, Any>>>
 
+    @Headers("Content-Type: application/json")
+    @POST("UpdateUser.php")
+    fun updateUserDetails(@Body userData: Customers): Call<ResponseBody>
 
+
+    @FormUrlEncoded
+    @POST("sendOtp.php")
+    fun sendOTP(
+        @Field("email") email: String,
+        @Field("action") action: String = "send_otp"
+    ): Call<ResponseBody>
+
+    @FormUrlEncoded
+    @POST("sendOtp.php")
+    fun verifyOTP(
+        @Field("email") email: String,
+        @Field("otp") otp: String,
+        @Field("action") action: String = "verify_otp"
+    ): Call<ResponseBody>
+
+    @FormUrlEncoded
+    @POST("sendOtp.php")
+    fun resetPassword(
+        @Field("email") email: String,
+        @Field("new_password") newPassword: String,
+        @Field("action") action: String = "reset_password"
+    ): Call<ResponseBody>
 }
+
+
+
+
+
+
+
+
+
