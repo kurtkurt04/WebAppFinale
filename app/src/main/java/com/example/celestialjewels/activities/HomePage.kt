@@ -78,6 +78,11 @@ class HomePage : AppCompatActivity() {
                     finish()
                     true
                 }
+                R.id.OrHistory -> {
+                    startActivity(Intent(this, activity_toclaim::class.java))
+                    finish()
+                    true
+                }
                 else -> false
             }
         }

@@ -4,6 +4,7 @@ package com.example.celestialjewels.connection
 import com.example.celestialjewels.models.Customers
 import com.example.celestialjewels.models.OrderSubmission
 import com.example.celestialjewels.models.ProductResponse
+import com.example.celestialjewels.models.RegisterResponse
 import retrofit2.Call
 import okhttp3.ResponseBody
 import retrofit2.http.Body
@@ -18,7 +19,7 @@ interface ApiService {
     @Headers("Content-Type: application/json")
 
     @POST("register.php")  // Make sure this path is correct!
-    fun addCustomer(@Body customer: Customers): Call<ResponseBody>
+    fun addCustomer(@Body customer: Customers): Call<RegisterResponse>
 
     @POST("login.php")
     fun login(@Body loginData: Customers): Call<Customers>
