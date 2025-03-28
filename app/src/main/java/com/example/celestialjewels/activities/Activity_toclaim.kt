@@ -4,6 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +21,7 @@ import com.example.celestialjewels.connection.RetrofitClient
 import com.example.celestialjewels.managers.SessionManager
 import com.example.celestialjewels.models.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,6 +29,8 @@ import retrofit2.Response
 class activity_toclaim : AppCompatActivity() {
     private lateinit var rvToClaim: RecyclerView
     private lateinit var orderAdapter: OrderAdapter
+    private lateinit var spinnerOrderStatus: Spinner
+    private var originalOrders: List<CompleteOrder> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +48,10 @@ class activity_toclaim : AppCompatActivity() {
         rvToClaim = findViewById(R.id.rvToClaim)
         rvToClaim.layoutManager = LinearLayoutManager(this)
 
+        // Initialize Status Spinner
+        spinnerOrderStatus = findViewById(R.id.spinnerOrderStatus)
+        setupStatusSpinner()
+
         // Fetch and display orders
         val customerId = SessionManager.getCustomerId(this)
         customerId?.let {
@@ -51,6 +61,36 @@ class activity_toclaim : AppCompatActivity() {
         setupBottomNavigation()
     }
 
+    private fun setupStatusSpinner() {
+        val statusOptions = arrayOf("All", "Pending", "Processing", "For Claiming", "Claimed")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusOptions)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerOrderStatus.adapter = adapter
+
+        spinnerOrderStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedStatus = statusOptions[position]
+                filterOrders(selectedStatus)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+        }
+    }
+
+    private fun filterOrders(status: String) {
+        val filteredOrders = when (status) {
+            "All" -> originalOrders
+            "Pending" -> originalOrders.filter { it.order.status == OrderStatus.PENDING }
+            "Processing" -> originalOrders.filter { it.order.status == OrderStatus.PROCESSING }
+            "For Claiming" -> originalOrders.filter { it.order.status == OrderStatus.FOR_CLAIMING }
+            "Claimed" -> originalOrders.filter { it.order.status == OrderStatus.CLAIMED }
+            else -> originalOrders
+        }
+
+        updateOrdersList(filteredOrders)
+    }
     private fun fetchOrders(customerId: Int) {
         val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
         val call = apiService.getCustomerOrders(customerId)
@@ -63,17 +103,8 @@ class activity_toclaim : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val ordersData = response.body()
                     val completeOrders = processOrdersData(ordersData ?: emptyList())
-
-                    if (completeOrders.isEmpty()) {
-                        findViewById<TextView>(R.id.tvEmptyState).visibility = View.VISIBLE
-                        rvToClaim.visibility = View.GONE
-                    } else {
-                        findViewById<TextView>(R.id.tvEmptyState).visibility = View.GONE
-                        rvToClaim.visibility = View.VISIBLE
-
-                        orderAdapter = OrderAdapter(completeOrders, this@activity_toclaim)
-                        rvToClaim.adapter = orderAdapter
-                    }
+                    originalOrders = completeOrders
+                    updateOrdersList(completeOrders)
                 } else {
                     Log.e("FetchOrders", "Error: ${response.code()} - ${response.message()}")
                 }
@@ -85,10 +116,27 @@ class activity_toclaim : AppCompatActivity() {
         })
     }
 
+
+
+
+
+    private fun updateOrdersList(orders: List<CompleteOrder>) {
+        if (orders.isEmpty()) {
+            findViewById<TextView>(R.id.tvEmptyState).visibility = View.VISIBLE
+            rvToClaim.visibility = View.GONE
+        } else {
+            findViewById<TextView>(R.id.tvEmptyState).visibility = View.GONE
+            rvToClaim.visibility = View.VISIBLE
+
+            orderAdapter = OrderAdapter(orders, this)
+            rvToClaim.adapter = orderAdapter
+        }
+    }
+
     private fun setupBottomNavigation() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        bottomNavigationView.selectedItemId = R.id.action_profile
+        bottomNavigationView.selectedItemId = R.id.OrHistory
 
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -109,13 +157,19 @@ class activity_toclaim : AppCompatActivity() {
                     finish()
                     true
                 }
+                R.id.OrHistory -> {
+                    // Current activity, do nothing
+                    true
+                }
 
                 else -> false
             }
         }
     }
 
-    // **Moved processOrdersData outside setupBottomNavigation()**
+
+
+
     private fun processOrdersData(ordersData: List<Map<String, Any>>): List<CompleteOrder> {
         return ordersData.map { orderMap ->
             val orderId = (orderMap["order_id"] as? Number)?.toInt() ?: 0
@@ -130,8 +184,6 @@ class activity_toclaim : AppCompatActivity() {
                 else -> OrderStatus.PENDING
             }
 
-            Log.d("FetchOrders", "Processing Order ID: $orderId, API Total: $apiTotalAmount")
-
             val items = (orderMap["items"] as? List<Map<String, Any>>)?.map { itemMap ->
                 val productId = (itemMap["product_id"] as? Number)?.toInt() ?: 0
                 val productName = itemMap["product_name"] as? String ?: "Unknown Product"
@@ -139,11 +191,6 @@ class activity_toclaim : AppCompatActivity() {
                 val unitPrice = itemMap["unit_price"].toString().toDoubleOrNull() ?: 0.0
                 val totalAmount = (itemMap["total_amount"] as? Number)?.toDouble()
                     ?: (quantity * unitPrice)
-
-                Log.d(
-                    "FetchOrders",
-                    "Item: $productName, QTY: $quantity, Unit: $unitPrice, Total: $totalAmount"
-                )
 
                 OrderItems(
                     orderItemId = null,
@@ -158,8 +205,6 @@ class activity_toclaim : AppCompatActivity() {
 
             val calculatedTotal = items.sumOf { it.totalAmount }.takeIf { it > 0.0 }
                 ?: apiTotalAmount
-
-            Log.d("FetchOrders", "Final Calculated Total: $calculatedTotal")
 
             CompleteOrder(
                 order = Orders(

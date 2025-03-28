@@ -43,12 +43,6 @@ class Profile : AppCompatActivity() {
         // Set Profile as selected when the activity opens
         bottomNavigationView.selectedItemId = R.id.action_profile
 
-        val btnDelivery = findViewById<MaterialButton>(R.id.btn_order_history)
-        btnDelivery.setOnClickListener {
-            val intent = Intent(this, activity_toclaim::class.java)
-            startActivity(intent)
-        }
-
         // Navigate to Change Password screen
         changePassTextView.setOnClickListener {
             val intent = Intent(this, ChangePass::class.java)
@@ -79,7 +73,13 @@ class Profile : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.action_profile -> true // Already in Profile
+                R.id.action_profile -> true
+
+                R.id.OrHistory -> {
+                    startActivity(Intent(this, activity_toclaim::class.java))
+                    finish()
+                    true
+                }
                 else -> false
             }
         }

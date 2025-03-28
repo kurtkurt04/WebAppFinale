@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.celestialjewels.R
@@ -20,37 +21,50 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class Shop : AppCompatActivity() {
+    // Declare variables
     private lateinit var recyclerView: RecyclerView
     private lateinit var jewelryAdapter: JewelryAdapter
+    private lateinit var searchView: SearchView
+
+    // List to store all jewelry items
+    private var fullJewelryList: List<Jewelry> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop)
 
-        // Load persisted cart items when the activity is created
-        CartManager.loadCartItems(this)
-
+        // Initialize components
         recyclerView = findViewById(R.id.jewelryRecyclerView)
+        searchView = findViewById(R.id.searchView)
+
+        // Set up RecyclerView layout
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
-        fetchProductsFromDatabase()
+        // Load cart items
+        CartManager.loadCartItems(this)
+
+        // Fetch products and set up search
+        fetchProducts()
+        setupSearchView()
         setupCartButton()
         setupBottomNavigation()
     }
 
-    private fun fetchProductsFromDatabase() {
+    private fun fetchProducts() {
         RetrofitClient.apiService.fetchProducts().enqueue(object : Callback<ProductResponse> {
             override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>) {
                 if (response.isSuccessful) {
                     val productResponse = response.body()
                     if (productResponse?.status == "success") {
-                        val jewelryList = productResponse.products.map { product ->
+                        // Store full list of jewelry items
+                        fullJewelryList = productResponse.products.map { product ->
                             product.copy(
-                                localImageResource = R.drawable.one // Use the new property
+                                localImageResource = R.drawable.one
                             )
                         }
 
-                        jewelryAdapter = JewelryAdapter(jewelryList, this@Shop)
+                        // Set up initial adapter
+                        jewelryAdapter = JewelryAdapter(fullJewelryList, this@Shop)
                         recyclerView.adapter = jewelryAdapter
                     } else {
                         Toast.makeText(this@Shop, "No products found", Toast.LENGTH_SHORT).show()
@@ -67,6 +81,41 @@ class Shop : AppCompatActivity() {
         })
     }
 
+    private fun setupSearchView() {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            // This method is called when the user submits the search
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // Perform search when submit button is pressed
+                query?.let { searchJewelry(it) }
+                return true
+            }
+
+            // This method is called every time the text changes
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Perform search as user types
+                newText?.let { searchJewelry(it) }
+                return true
+            }
+        })
+    }
+
+    private fun searchJewelry(searchText: String) {
+        // Filter the full list of jewelry based on search text
+        val filteredList = fullJewelryList.filter { jewelry ->
+            // Search by name (you can add more fields if needed)
+            jewelry.name.contains(searchText, ignoreCase = true)
+        }
+
+        // Update the adapter with filtered list
+        jewelryAdapter = JewelryAdapter(filteredList, this)
+        recyclerView.adapter = jewelryAdapter
+
+        // Show message if no items found
+        if (filteredList.isEmpty()) {
+            Toast.makeText(this, "No jewelry found", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun setupCartButton() {
         val cartButton = findViewById<ImageButton>(R.id.CartBtn)
         cartButton.setOnClickListener {
@@ -74,19 +123,8 @@ class Shop : AppCompatActivity() {
         }
     }
 
-    fun addToCart(jewelry: Jewelry) {
-        CartManager.addItem(jewelry)
-        // Save cart items immediately after adding
-        CartManager.saveCartItems(this)
-
-        // Optional: Show a toast to confirm item added to cart
-        Toast.makeText(this, "${jewelry.name} added to cart", Toast.LENGTH_SHORT).show()
-    }
-
     private fun setupBottomNavigation() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-
-        // Highlight the Shop tab
         bottomNavigationView.selectedItemId = R.id.action_notification
 
         bottomNavigationView.setOnItemSelectedListener { item ->
@@ -96,12 +134,14 @@ class Shop : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.action_notification -> {
-                    // Prevent reloading the same page
-                    false
-                }
+                R.id.action_notification -> false
                 R.id.action_profile -> {
                     startActivity(Intent(this, Profile::class.java))
+                    finish()
+                    true
+                }
+                R.id.OrHistory -> {
+                    startActivity(Intent(this, activity_toclaim::class.java))
                     finish()
                     true
                 }
@@ -110,7 +150,6 @@ class Shop : AppCompatActivity() {
         }
     }
 
-    // Optional: Override onPause to ensure cart is saved
     override fun onPause() {
         super.onPause()
         CartManager.saveCartItems(this)

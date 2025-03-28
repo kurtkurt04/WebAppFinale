@@ -3,19 +3,19 @@ package com.example.celestialjewels.activities
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.celestialjewels.adapters.CartAdapter
-import com.example.celestialjewels.models.Jewelry
 import com.example.celestialjewels.R
+import com.example.celestialjewels.adapters.CartAdapter
 import com.example.celestialjewels.managers.CartManager
+import com.example.celestialjewels.models.Jewelry
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class Cart : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var totalText: TextView
+    private lateinit var checkoutButton: Button
     private lateinit var cartAdapter: CartAdapter
     private lateinit var cartItems: MutableList<Jewelry>
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -28,7 +28,7 @@ class Cart : AppCompatActivity() {
         CartManager.loadCartItems(this)
 
         recyclerView = findViewById(R.id.cartRecyclerView)
-        totalText = findViewById(R.id.totalText)
+        checkoutButton = findViewById(R.id.btncart1)
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -37,16 +37,13 @@ class Cart : AppCompatActivity() {
         cartItems = CartManager.getUniqueItems().toMutableList()
 
         // Initialize adapter with a function to update total
-        cartAdapter = CartAdapter(cartItems) {
-            updateTotal()
-            // Save cart items whenever the total is updated
+        cartAdapter = CartAdapter(cartItems, this) {
+            // Callback after item changes
             CartManager.saveCartItems(this)
         }
         recyclerView.adapter = cartAdapter
 
-        updateTotal()
-
-        val checkoutButton: Button = findViewById(R.id.btncart1)
+        // Setup checkout button click listener
         checkoutButton.setOnClickListener {
             navigateToCheckout()
         }
@@ -54,29 +51,15 @@ class Cart : AppCompatActivity() {
         setupBottomNavigation()
     }
 
-    override fun onResume() {
-        super.onResume()
-        refreshCart()
-    }
-
-    private fun refreshCart() {
-        // Clear and repopulate cart items
-        cartItems.clear()
-        cartItems.addAll(CartManager.getUniqueItems())
-
-        // Notify adapter of data changes
-        cartAdapter.notifyDataSetChanged()
-
-        // Update total
-        updateTotal()
-    }
-
-    private fun updateTotal() {
-        val total = CartManager.getTotalPrice()
-        totalText.text = "Total: ₱${String.format("%.2f", total)}"
-    }
-
     private fun navigateToCheckout() {
+        // Check if cart is empty before navigating
+        if (cartItems.isEmpty()) {
+            // Show a toast message if cart is empty
+            Toast.makeText(this, "Your cart is empty. Please add items to checkout.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // If cart is not empty, proceed to checkout
         val intent = Intent(this, Checkout::class.java)
         startActivity(intent)
     }
@@ -97,6 +80,11 @@ class Cart : AppCompatActivity() {
                 }
                 R.id.action_profile -> {
                     startActivity(Intent(this, Profile::class.java))
+                    finish()
+                    true
+                }
+                R.id.OrHistory -> {
+                    startActivity(Intent(this, activity_toclaim::class.java))
                     finish()
                     true
                 }

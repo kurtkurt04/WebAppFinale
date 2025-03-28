@@ -14,6 +14,7 @@ import com.example.celestialjewels.R
 import com.example.celestialjewels.connection.ApiService
 import com.example.celestialjewels.connection.RetrofitClient
 import com.example.celestialjewels.models.Customers
+import com.example.celestialjewels.models.RegisterResponse
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -105,20 +106,23 @@ class Registration : AppCompatActivity() {
             email = email
         )
 
-        apiService.addCustomer(customers).enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                if (response.isSuccessful) {
+        apiService.addCustomer(customers).enqueue(object : Callback<RegisterResponse> {
+            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+
+//                response.body().status === "failure"
+//                response.isSuccessful === response.code() == 200
+                if (response.body()?.status != "failure") {
                     Toast.makeText(this@Registration, "Customer added successfully!", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@Registration, LoginPage::class.java)
                     startActivity(intent)
                     finish()
                 } else {
                     Log.e("API_ERROR", "Error Code: ${response.code()} - ${response.message()}")
-                    Toast.makeText(this@Registration, "Server Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@Registration, response.body()?.message, Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
                 Log.e("API_ERROR", "Network Failure: ${t.message}")
                 Toast.makeText(this@Registration, "Failed to connect to server", Toast.LENGTH_SHORT).show()
             }

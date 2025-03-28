@@ -1,5 +1,6 @@
 package com.example.celestialjewels.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,12 +9,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.celestialjewels.R
+import com.example.celestialjewels.managers.CartManager
 import com.example.celestialjewels.models.Jewelry
 
 class CartAdapter(
-    private val cartItems: MutableList<Jewelry>, // Ensure we can modify quantity
+    private val cartItems: MutableList<Jewelry>,
+    private val context: Context, // Add context parameter
     private val updateTotal: () -> Unit // Callback to update total price
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
+
 
     inner class CartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.jewelryImage)
@@ -65,9 +69,14 @@ class CartAdapter(
 
         // Remove item from cart
         holder.btnRemove.setOnClickListener {
+            val removedItem = cartItems[position]
             cartItems.removeAt(position)
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, cartItems.size)
+
+            // Remove the item from CartManager and save
+            CartManager.removeItem(removedItem, context) // Now context is available
+
             updateTotal()
         }
     }

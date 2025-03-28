@@ -39,8 +39,9 @@ object CartManager {
         return cartItems.sumOf { it.price * it.quantity }
     }
 
-    fun removeItem(item: Jewelry) {
+    fun removeItem(item: Jewelry, context: Context) {
         cartItems.removeAll { it.id == item.id }
+        saveCartItems(context) // Automatically save after removing
     }
 
     // Save cart items to SharedPreferences
